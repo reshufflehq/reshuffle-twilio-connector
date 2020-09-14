@@ -1,52 +1,51 @@
-## BEGIN - TO DELETE TILL END
+# reshuffle-twilio-connector
 
-THIS IS A TEMPLATE REPO FOR NEW RESHUFFLE CONNECTOR
-1. Create a new connector repo from this template using this link https://github.com/reshufflehq/reshuffle-template-connector/generate
-2. Clone the repo locally
-3. Rename all occurrences of _CONNECTOR_NAME_
-4. `npm install`
-5. `npm run build:watch`
-6. Implements your events/actions in `src/index.ts`
-7. `npm run lint`
-8. Push your code
-9. Go to https://app.circleci.com/projects/project-dashboard/github/reshufflehq/
-    a. You should see your new connector repo
-    b. click on `Set Up Project` for the repo
-    c. click on `Use Existing Config`
-    d. click on `Start Building`
+### Reshuffle Twilio Connector
 
-10. If circle CI checks are all green, you are all set!
-
-// Keep documentation template below
-
-## END
-
-# reshuffle-_CONNECTOR_NAME_-connector
-
-### Reshuffle _CONNECTOR_NAME_ Connector
-
-This connector provides <description>.
+This connector provides Twilio send sms and send mms actions.
 
 #### Configuration Options:
 ```typescript
-interface _CONNECTOR_NAME_ConnectorConfigOptions {
-  foo: string // foo description
-  bar?: number // bar description
+interface TwilioConnectorConfigOptions {
+    accountSid: string
+    authToken: string
+    opts?: Twilio.TwilioClientOptions
+    twilioNumber?: string
 }
 ```
 
 #### Connector events
 
-##### event1 description
-The connector fires this event when ...
+##### new messages
+This event is fired when new messages are delivered to <twilioNumber>.
 
-##### event2 description
-The connector fires this event when ...
+For setting up webhooks in Twilio:
+- go to https://www.twilio.com/console/phone-numbers/incoming
+- select the phone number you'd like to use
+- scroll all the way down to messaging
+- create a new webhook with method and path
+- save
+
+You can now trigger a handler on incoming messages:
+```js
+twilioConnector.on({method: 'GET' | 'POST', path:'/sms'}, (event) => {
+  const msg = event.context.res.end('Thanks for your message')
+})
+```
 
 #### Connector actions
 
-##### action1
-The connector provides action1 which ...
+##### sendSMS
+This connector provides an action for sending SMS via Twilio
+```js
+twilioConnector.sendSMS('<your-message>', '<to-phone-number>' )
+```
 
-##### action2
-The connector provides action2 which ...
+##### sendMMS
+```js
+twilioConnector.sendMMS('<your-message>', '<media-url>','<to-phone-number>' )
+```
+
+
+
+
