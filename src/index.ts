@@ -1,61 +1,108 @@
-import { Reshuffle, BaseConnector, EventConfiguration } from 'reshuffle-base-connector'
+import { Reshuffle, EventConfiguration, BaseHttpConnector } from 'reshuffle-base-connector'
+import twilio, { Twilio } from 'twilio'
+import { NextFunction, Request, Response } from 'express'
 
-export interface _CONNECTOR_NAME_ConnectorConfigOptions {
-  var1: string
-  // ...
+const DEFAULT_WEBHOOK_PATH = '/twilio-msg-events'
+
+export interface TwilioConnectorConfigOptions {
+  accountSid?: string
+  authToken?: string
+  opts?: Twilio.TwilioClientOptions
+  twilioNumber?: string
 }
 
-export interface _CONNECTOR_NAME_ConnectorEventOptions {
-  option1?: string
-  // ...
+export interface TwilioConnectorEventOptions {
+  path?: string
+  method?: 'GET' | 'POST'
 }
 
-export default class _CONNECTOR_NAME_Connector extends BaseConnector<
-  _CONNECTOR_NAME_ConnectorConfigOptions,
-  _CONNECTOR_NAME_ConnectorEventOptions
+const sanitizePath = (path = DEFAULT_WEBHOOK_PATH) => {
+  const pathNoQueryParam = path.split('?')[0]
+  return pathNoQueryParam.startsWith('/') ? pathNoQueryParam : `/${pathNoQueryParam}`
+}
+
+export default class TwilioConnector extends BaseHttpConnector<
+  TwilioConnectorConfigOptions,
+  TwilioConnectorEventOptions
 > {
   // Your class variables
-  var1: string
+  client: Twilio
 
-  constructor(app: Reshuffle, options?: _CONNECTOR_NAME_ConnectorConfigOptions, id?: string) {
+  constructor(app: Reshuffle, options: TwilioConnectorConfigOptions, id?: string) {
     super(app, options, id)
-    this.var1 = options?.var1 || 'initial value'
-    // ...
-  }
-
-  onStart(): void {
-    // If you need to do something specific on start, otherwise remove this function
-  }
-
-  onStop(): void {
-    // If you need to do something specific on stop, otherwise remove this function
+    this.client = twilio(options.accountSid, options.authToken, options.opts)
   }
 
   // Your events
-  on(
-    options: _CONNECTOR_NAME_ConnectorEventOptions,
-    handler: any,
-    eventId: string,
-  ): EventConfiguration {
+  on(options: TwilioConnectorEventOptions, handler: any, eventId: string): EventConfiguration {
+    const optionsSanitized = { method: options.method || 'POST', path: sanitizePath(options.path) }
+
     if (!eventId) {
-      eventId = `_CONNECTOR_NAME_/${options.option1}/${this.id}`
+      eventId = `Twilio/${this.id}`
     }
-    const event = new EventConfiguration(eventId, this, options)
+    const event = new EventConfiguration(eventId, this, optionsSanitized)
     this.eventConfigurations[event.id] = event
 
     this.app.when(event, handler)
+    this.app.registerHTTPDelegate(event.options.path, this)
 
     return event
   }
 
-  // Your actions
-  action1(bar: string): void {
-    // Your implementation here
+  async handle(req: Request, res: Response, next: NextFunction): Promise<boolean> {
+    const { method, params } = req
+    const requestPath = params[0]
+    let handled = false
+
+    const eventConfiguration = Object.values(this.eventConfigurations).find(
+      ({ options }) => options.path === requestPath && options.method === method,
+    )
+
+    if (eventConfiguration) {
+      this.app.getLogger().info('Handling Twilio event')
+      handled = await this.app.handleEvent(eventConfiguration.id, {
+        ...eventConfiguration,
+        context: { req, res },
+      })
+    } else {
+      this.app.getLogger().warn(`No Twilio event configuration matching ${method} ${requestPath}`)
+    }
+
+    next()
+
+    return handled
   }
 
-  action2(foo: string): void {
-    // Your implementation here
+  public async sendSMS(body: string, to: string): Promise<any | undefined> {
+    try {
+      const message = await this.client.messages.create({
+        body,
+        to, // Text this number
+        from: this.configOptions?.twilioNumber, // From a valid Twilio number
+      })
+      this.app.getLogger().info(`Message with id: ${message.sid} was sent.`)
+
+      return message
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  public async sendMMS(body: string, mediaUrl: string, to: string): Promise<any | undefined> {
+    try {
+      const message = await this.client.messages.create({
+        body,
+        mediaUrl: [mediaUrl],
+        to, // Text this number
+        from: this.configOptions?.twilioNumber, // From a valid Twilio number
+      })
+      this.app.getLogger().info(`MMS Message with id: ${message.sid} was sent.`)
+
+      return message
+    } catch (err) {
+      this.app.getLogger().error(err)
+    }
   }
 }
 
-export { _CONNECTOR_NAME_Connector }
+export { TwilioConnector }
