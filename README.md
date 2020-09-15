@@ -1,5 +1,9 @@
 # reshuffle-twilio-connector
 
+[Code](https://github.com/reshufflehq/reshuffle-twilio-connector) |  [npm](https://www.npmjs.com/package/reshuffle-twilio-connector)
+
+`npm install reshuffle-twilio-connector`
+
 ### Reshuffle Twilio Connector
 
 This connector provides Twilio send sms and send mms actions.
@@ -34,18 +38,20 @@ twilioConnector.on({method: 'GET' | 'POST', path:'/sms'}, (event) => {
 ```
 
 #### Connector actions
+This connector provides 2 type of actions for sending SMS or MMS via Twilio
 
 ##### sendSMS
-This connector provides an action for sending SMS via Twilio
+send a message via Twilio:
 ```js
-twilioConnector.sendSMS('<your-message>', '<to-phone-number>' )
+myTwilioConnector.sendSMS('<your-message>', '<to-phone-number>' )
 ```
 
 ##### sendMMS
+send a media message via Twilio:
 ```js
-twilioConnector.sendMMS('<your-message>', '<media-url>','<to-phone-number>' )
+myTwilioConnector.sendMMS('<your-message>', '<media-url>','<to-phone-number>' )
 ```
 
-
+Example on how to use this connector can be [found here](https://github.com/reshufflehq/reshuffle/blob/master/examples/message/TwilioSendMessageExample.js).
 
 
