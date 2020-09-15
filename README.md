@@ -33,6 +33,8 @@ For setting up webhooks in Twilio:
 You can now trigger a handler on incoming messages:
 ```js
 twilioConnector.on({method: 'GET' | 'POST', path:'/sms'}, (event) => {
+  const messageReceived = event.context.req.body.Body
+  console.log('message', messageReceived)
   const msg = event.context.res.end('Thanks for your message')
 })
 ```
@@ -53,5 +55,3 @@ myTwilioConnector.sendMMS('<your-message>', '<media-url>','<to-phone-number>' )
 ```
 
 Example on how to use this connector can be [found here](https://github.com/reshufflehq/reshuffle/blob/master/examples/message/TwilioSendMessageExample.js).
-
-
