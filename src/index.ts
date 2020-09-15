@@ -25,7 +25,6 @@ export default class TwilioConnector extends BaseHttpConnector<
   TwilioConnectorConfigOptions,
   TwilioConnectorEventOptions
 > {
-  // Your class variables
   client: Twilio
 
   constructor(app: Reshuffle, options: TwilioConnectorConfigOptions, id?: string) {
@@ -33,12 +32,11 @@ export default class TwilioConnector extends BaseHttpConnector<
     this.client = twilio(options.accountSid, options.authToken, options.opts)
   }
 
-  // Your events
   on(options: TwilioConnectorEventOptions, handler: any, eventId: string): EventConfiguration {
     const optionsSanitized = { method: options.method || 'POST', path: sanitizePath(options.path) }
 
     if (!eventId) {
-      eventId = `Twilio/${this.id}`
+      eventId = `Twilio/${optionsSanitized.path}/${this.id}`
     }
     const event = new EventConfiguration(eventId, this, optionsSanitized)
     this.eventConfigurations[event.id] = event
@@ -80,11 +78,11 @@ export default class TwilioConnector extends BaseHttpConnector<
         to, // Text this number
         from: this.configOptions?.twilioNumber, // From a valid Twilio number
       })
-      this.app.getLogger().info(`Message with id: ${message.sid} was sent.`)
+      this.app.getLogger().info(`Twilio connector SMS sent [id: ${message.sid}, to: ${to}]`)
 
       return message
     } catch (err) {
-      console.log(err)
+      this.app.getLogger().error(`Twilio connector error when sending SMS to ${to}`, err)
     }
   }
 
@@ -96,11 +94,11 @@ export default class TwilioConnector extends BaseHttpConnector<
         to, // Text this number
         from: this.configOptions?.twilioNumber, // From a valid Twilio number
       })
-      this.app.getLogger().info(`MMS Message with id: ${message.sid} was sent.`)
+      this.app.getLogger().info(`Twilio connector MMS sent [id: ${message.sid}, to: ${to}]`)
 
       return message
     } catch (err) {
-      this.app.getLogger().error(err)
+      this.app.getLogger().error(`Twilio connector error when sending MMS to ${to}`, err)
     }
   }
 }
