@@ -86,4 +86,9 @@ send a media message via Twilio:
 myTwilioConnector.sendMMS('<your-message>', '<media-url>','<to-phone-number>' )
 ```
 
+##### sdk
+returns a Twilio client (using the connector config options)
+
+See documentation in Twilio github: https://github.com/twilio/twilio-node
+
 Example on how to use this connector can be [found here](https://github.com/reshufflehq/reshuffle/blob/master/examples/message/TwilioSendMessageExample.js).

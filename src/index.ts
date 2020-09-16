@@ -101,6 +101,10 @@ export default class TwilioConnector extends BaseHttpConnector<
       this.app.getLogger().error(`Twilio connector error when sending MMS to ${to}`, err)
     }
   }
+
+  public sdk(): Twilio {
+    return this.client
+  }
 }
 
 export { TwilioConnector }
