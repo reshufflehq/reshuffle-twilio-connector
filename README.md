@@ -30,12 +30,44 @@ For setting up webhooks in Twilio:
 - create a new webhook with method and path
 - save
 
-You can now trigger a handler on incoming messages:
+You can now trigger a handler on incoming messages.
+
+##### Example:
 ```js
-twilioConnector.on({method: 'GET' | 'POST', path:'/sms'}, (event) => {
+twilioConnector.on({method:'POST', path:'/sms'}, (event) => {
+  console.log(event.context.req.body)
+  // Example of console output for event.context.req.body:
+  // {
+  //   ToCountry = "US"
+  //   ToState = "ID"
+  //   SmsMessageSid = "SM9aca55a393c120f964cc49d91bfec52e"
+  //   NumMedia = "0"
+  //   ToCity = "DESMET"
+  //   FromZip = "85004"
+  //   SmsSid = "SM9aca55a393c120f964cc49d91bfec52e"
+  //   FromState = "AZ"
+  //   SmsStatus = "received"
+  //   FromCity = "PHOENIX"
+  //   Body = "msg line 1 line 2 line 3"
+  //   FromCountry = "US"
+  //   To = "+12082685987"
+  //   ToZip = "99128"
+  //   NumSegments = "1"
+  //   MessageSid = "SM9aca55a393c120f964cc49d91bfec52e"
+  //   AccountSid = "AC43820350f399443f2ab9a80ce59dc797"
+  //   From = "+19282275501"
+  //   ApiVersion = "2010-04-01"
+  // }
+
   const messageReceived = event.context.req.body.Body
-  console.log('message', messageReceived)
-  const msg = event.context.res.end('Thanks for your message')
+  const fromPhoneNumber = event.context.req.body.From
+  console.log(`New SMS received from ${fromPhoneNumber}: ${messageReceived}`)
+
+  if(messageReceived.includes('test')) {
+    event.context.res.end("test successful")
+  } else {
+    event.context.res.end("Thanks for your message")
+  }
 })
 ```
 
