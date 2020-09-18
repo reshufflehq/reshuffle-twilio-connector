@@ -36,7 +36,7 @@ export default class TwilioConnector extends BaseHttpConnector<
     const optionsSanitized = { method: options.method || 'POST', path: sanitizePath(options.path) }
 
     if (!eventId) {
-      eventId = `Twilio/${optionsSanitized.path}/${this.id}`
+      eventId = `Twilio${optionsSanitized.path}/${this.id}`
     }
     const event = new EventConfiguration(eventId, this, optionsSanitized)
     this.eventConfigurations[event.id] = event
