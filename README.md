@@ -6,7 +6,39 @@
 
 ### Reshuffle Twilio Connector
 
-This connector provides Twilio send sms and send mms actions.
+This package is a (Reshuffle)[dev.reshuffle.com] connector, that provides Twilio send sms and send mms actions.
+
+This connector can be used to send SMS and MMS out.
+It can also trigger your code (through handlers) on incoming messages.
+
+The following example listens to an incoming SMS and reply:
+```js
+const { Reshuffle } = require('reshuffle')
+const { TwilioConnector } = require('reshuffle-twilio-connector')
+const app = new Reshuffle()
+
+// Create w Twilio account in few minutes for free: https://www.twilio.com/
+const twilioConnector = new TwilioConnector(app, {
+  accountSid: '<accountSid>',
+  authToken: '<authToken>',
+  twilioNumber: '<twilioNumber>',
+})
+
+// Reply to an incoming message on <twilioNumber>
+twilioConnector.on({ method: 'POST', path: '/sms' }, (event) => {
+  const messageReceived = event.context.req.body.Body
+  const fromPhoneNumber = event.context.req.body.From
+  console.log(`New SMS received from ${fromPhoneNumber}: ${messageReceived}`)
+
+  if (messageReceived.includes('test')) {
+    event.context.res.end('test successful')
+  } else {
+    event.context.res.end('Thanks for your message')
+  }
+})
+
+app.start()
+```
 
 #### Configuration Options:
 ```typescript
@@ -32,7 +64,7 @@ For setting up webhooks in Twilio:
 
 You can now trigger a handler on incoming messages.
 
-##### Example:
+##### Usage:
 ```js
 twilioConnector.on({method:'POST', path:'/sms'}, (event) => {
   console.log(event.context.req.body)
