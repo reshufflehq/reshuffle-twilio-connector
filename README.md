@@ -6,7 +6,7 @@
 
 ### Reshuffle Twilio Connector
 
-This package is a [Reshuffle](dev.reshuffle.com) connector that provides access to Twilio service. This connector can be used to send SMS and MMS out.
+This package is an [Reshuffle](dev.reshuffle.com) connector that provides access to Twilio service. This connector can be used to send SMS and MMS out.
 It can also trigger your code (through handlers) on incoming messages.
 
 The following example listens to an incoming SMS and reply:
