@@ -60,7 +60,8 @@ export default class TwilioConnector extends BaseHttpConnector<
       this.app.getLogger().info('Handling Twilio event')
       handled = await this.app.handleEvent(eventConfiguration.id, {
         ...eventConfiguration,
-        context: { req, res },
+        req,
+        res,
       })
     } else {
       this.app.getLogger().warn(`No Twilio event configuration matching ${method} ${requestPath}`)

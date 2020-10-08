@@ -1,6 +1,6 @@
 # reshuffle-twilio-connector
 
-[Code](https://github.com/reshufflehq/reshuffle-twilio-connector) |  [npm](https://www.npmjs.com/package/reshuffle-twilio-connector)
+[Code](https://github.com/reshufflehq/reshuffle-twilio-connector) |  [npm](https://www.npmjs.com/package/reshuffle-twilio-connector) | [Code sample](https://github.com/reshufflehq/reshuffle/tree/master/examples/message)
 
 `npm install reshuffle-twilio-connector`
 
@@ -23,15 +23,15 @@ const twilioConnector = new TwilioConnector(app, {
 })
 
 // Reply to an incoming message on <twilioNumber>
-twilioConnector.on({ method: 'POST', path: '/sms' }, (event) => {
-  const messageReceived = event.context.req.body.Body
-  const fromPhoneNumber = event.context.req.body.From
+twilioConnector.on({ method: 'POST', path: '/sms' }, (event, app) => {
+  const messageReceived = event.req.body.Body
+  const fromPhoneNumber = event.req.body.From
   console.log(`New SMS received from ${fromPhoneNumber}: ${messageReceived}`)
 
   if (messageReceived.includes('test')) {
-    event.context.res.end('test successful')
+    event.res.end('test successful')
   } else {
-    event.context.res.end('Thanks for your message')
+    event.res.end('Thanks for your message')
   }
 })
 
@@ -64,9 +64,9 @@ You can now trigger a handler on incoming messages.
 
 ##### Usage:
 ```js
-twilioConnector.on({method:'POST', path:'/sms'}, (event) => {
-  console.log(event.context.req.body)
-  // Example of console output for event.context.req.body:
+twilioConnector.on({method:'POST', path:'/sms'}, (event, app) => {
+  console.log(event.req.body)
+  // Example of console output for event.req.body:
   // {
   //   ToCountry = "US"
   //   ToState = "ID"
@@ -89,14 +89,14 @@ twilioConnector.on({method:'POST', path:'/sms'}, (event) => {
   //   ApiVersion = "2010-04-01"
   // }
 
-  const messageReceived = event.context.req.body.Body
-  const fromPhoneNumber = event.context.req.body.From
+  const messageReceived = event.req.body.Body
+  const fromPhoneNumber = event.req.body.From
   console.log(`New SMS received from ${fromPhoneNumber}: ${messageReceived}`)
 
   if(messageReceived.includes('test')) {
-    event.context.res.end("test successful")
+    event.res.end("test successful")
   } else {
-    event.context.res.end("Thanks for your message")
+    event.res.end("Thanks for your message")
   }
 })
 ```
