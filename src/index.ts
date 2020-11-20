@@ -1,6 +1,6 @@
 import { Reshuffle, EventConfiguration, BaseHttpConnector } from 'reshuffle-base-connector'
 import twilio, { Twilio } from 'twilio'
-import { NextFunction, Request, Response } from 'express'
+import { Request, Response } from 'express'
 
 const DEFAULT_WEBHOOK_PATH = '/twilio-msg-events'
 
@@ -47,10 +47,13 @@ export default class TwilioConnector extends BaseHttpConnector<
     return event
   }
 
-  async handle(req: Request, res: Response, next: NextFunction): Promise<boolean> {
+  async handle(req: Request, res: Response): Promise<boolean> {
     const { method, params } = req
     const requestPath = params[0]
     let handled = false
+
+    // Acknowledge that you received those events
+    res.send()
 
     const eventConfiguration = Object.values(this.eventConfigurations).find(
       ({ options }) => options.path === requestPath && options.method === method,
@@ -66,8 +69,6 @@ export default class TwilioConnector extends BaseHttpConnector<
     } else {
       this.app.getLogger().warn(`No Twilio event configuration matching ${method} ${requestPath}`)
     }
-
-    next()
 
     return handled
   }
