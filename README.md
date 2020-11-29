@@ -6,10 +6,10 @@
 
 ### Reshuffle Twilio Connector
 
-This package is a [Reshuffle](https://dev.reshuffle.com) connector that provides access to Twilio service. This connector can be used to send SMS and MMS out.
+This package is a [Reshuffle](https://dev.reshuffle.com) connector that provides access to the Twilio service. This connector can be used to send SMS and MMS out.
 It can also trigger your code (through handlers) on incoming messages.
 
-The following example listens to an incoming SMS and reply:
+The following example listens to an incoming SMS and responds back to the service:
 ```js
 const { Reshuffle } = require('reshuffle')
 const { TwilioConnector } = require('reshuffle-twilio-connector')
@@ -51,7 +51,7 @@ interface TwilioConnectorConfigOptions {
 #### Connector events
 
 ##### new messages
-This event is fired when new messages are delivered to <twilioNumber>.
+This event is fired when new messages are delivered to a `<twilioNumber>`.
 
 For setting up webhooks in Twilio:
 - go to https://www.twilio.com/console/phone-numbers/incoming
@@ -102,7 +102,7 @@ twilioConnector.on({method:'POST', path:'/sms'}, (event, app) => {
 ```
 
 #### Connector actions
-This connector provides 2 type of actions for sending SMS or MMS via Twilio
+This connector provides 2 types of actions for sending SMS or MMS via Twilio
 
 ##### sendSMS
 send a message via Twilio:
