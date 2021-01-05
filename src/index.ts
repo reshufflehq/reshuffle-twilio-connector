@@ -48,8 +48,8 @@ export default class TwilioConnector extends BaseHttpConnector<
   }
 
   async handle(req: Request, res: Response): Promise<boolean> {
-    const { method, params } = req
-    const requestPath = params[0]
+    const { method, url } = req
+    const requestPath = url
     let handled = false
 
     // Acknowledge that you received those events
